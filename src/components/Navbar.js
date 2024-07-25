@@ -1,48 +1,73 @@
-import React from 'react'
-import PropTypes from 'prop-types'
-// import { Link } from 'react-router-dom'
+import React, {useState} from 'react'
 
-export default function Navbar(props) {
+export default function TextForm(props) {
+    const handleUpClick = ()=>{
+        let newText = text.toUpperCase();
+        setText(newText)
+        props.showAlert("Converted to Upper Case!", "success");
+    }
+    
+    
+    const handleLoClick = ()=>{
+        let newText = text.toLowerCase();
+        setText(newText)
+        props.showAlert("Converted to Lower Case!", "success");
+    }
+    
+    
+    const handleClearClick = ()=>{
+        let newText ="";
+        setText(newText)
+        props.showAlert("Text area is Cleared", "success");
+    }
+
+
+    const handleExtraSpaces = ()=>{
+        let newText = text.split(/[ ]+/);
+        setText(newText.join(" "))
+        props.showAlert("All extra space are removed!", "success");
+    }
+
+
+    const handleCopyClick = ()=>{
+        let text = document.getElementById("myBox");
+        text.select()
+        navigator.clipboard.writeText(text.value);
+        document.getSelection().removeAllRanges();
+        props.showAlert("Text Copied", "success");
+    }
+
+    
+    const handleOnchange = (event)=>{
+        setText(event.target.value)
+    }
+    
+
+    const [text, setText] = useState("write anything");
     return (
-        <nav className={`navbar navbar-expand-lg navbar-${props.mode} bg-${props.mode}`}>
-            <div className="container-fluid">
-                {/* <Link className="navbar-brand" to="/">{props.title}</Link> */}
-                <a className="navbar-brand" href="#">{props.title}</a>
-                <button className="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
-                    <span className="navbar-toggler-icon"></span>
-                </button>
-                <div className="collapse navbar-collapse" id="navbarSupportedContent">
-                    <ul className="navbar-nav me-auto mb-2 mb-lg-0">
-                        <li className="nav-item">
-                            {/* <Link className="nav-link active" aria-current="page" to="/">Home</Link> */}
-                            <a className="nav-link active" aria-current="page" href="#">Home</a>
-                        </li>
-                        {/* <li className="nav-item">
-                            <Link className="nav-link" to="/about">{props.aboutText}</Link>
-                            
-                        </li> */}
-                    </ul>
-                    {/* <form className="d-flex" role="search">
-                        <input className="form-control me-2" type="search" placeholder="Search" aria-label="Search" />
-                        <button className="btn btn-outline-success" type="submit">Search</button>
-                    </form> */}
-                    <div className={`form-check form-switch text-${props.mode==='light'?'dark':'light'}`}>
-                        <input className="form-check-input" onClick={props.toggleMode} type="checkbox" role="switch" id="flexSwitchCheckDefault" />
-                        <label className="form-check-label" htmlFor="flexSwitchCheckDefault">Enable Dark Mode</label>
-                    </div>
-                </div>
+        <>
+        <div  style={{color:props.mode==='light'?'black':'white'}}>
+            <h1>{props.heading}</h1>
+            <div className="form-group">
+                {/* <label for="myBox">Example textarea</label> */}
+                <textarea className="form-control" id="myBox" value={text} onChange={handleOnchange} style={{backgroundColor:props.mode==='dark'?'#12121c':'white', color:props.mode==='light'?'black':'white'}} rows="8"></textarea>
             </div>
-        </nav>
+            <button disabled={text.length===0} className="btn btn-primary mx-2 my-2" onClick={handleUpClick}>Convert to Uppercase</button>
+            <button disabled={text.length===0} className="btn btn-primary mx-2 my-2" onClick={handleLoClick}>Convert to Lowercase</button>
+            <button disabled={text.length===0} className="btn btn-primary mx-2 my-2" onClick={handleClearClick}>Clear</button>
+            <button disabled={text.length===0} className="btn btn-primary mx-2 my-2" onClick={handleCopyClick}>Text Copy</button>
+            <button disabled={text.length===0} className="btn btn-primary mx-2 my-2" onClick={handleExtraSpaces}>Remove Extra Space</button>
+        </div>
+
+        <div className="container my-3" style={{color:props.mode==='light'?'black':'white'}}>
+            <h1>Your Text Summary</h1>
+            <p>{text.split(" ").filter((element)=>{return element.length!==0}).length} words and {text.length} characters</p>
+            <p>{0.008 * text.split(" ").filter((element)=>{return element.length!==0}).length} Minutes read</p>
+            <h2>Preview</h2>
+            <p>{text.length>0 ? text: "Enter Something in Textbox area To Preview here....."}</p>
+        </div>
+        </>
     )
 }
 
 
-Navbar.propTypes = {
-    title: PropTypes.string.isRequired,
-    aboutText: PropTypes.string
-}
-
-// Navbar.defaultProps = {
-//     title:"Enter the name",
-//     aboutText: 'Write About'
-// }
